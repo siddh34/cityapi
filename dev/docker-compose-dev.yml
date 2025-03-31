@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: sample
+      POSTGRES_PASSWORD: sample
+      POSTGRES_DB: sample
+    networks:
+      - ktor-network
+
+networks:
+  ktor-network:
+    driver: bridge

@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: City API
+  description: API for managing cities
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /:
+    get:
+      summary: Root endpoint
+      responses:
+        '200':
+          description: Returns a greeting message
+          content:
+            text/plain:
+              schema:
+                type: string
+  
+  /cities:
+    post:
+      summary: Create a new city
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/City'
+      responses:
+        '201':
+          description: City created successfully
+          content:
+            application/json:
+              schema:
+                type: integer
+    get:
+      summary: Get all cities
+      responses:
+        '200':
+          description: Returns a list of cities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/City'
+
+  /cities/{id}:
+    get:
+      summary: Get a city by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Returns the city
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/City'
+        '404':
+          description: City not found
+    put:
+      summary: Update a city by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/City'
+      responses:
+        '200':
+          description: City updated successfully
+    patch:
+      summary: Partially update a city by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CityUpdateRequest'
+      responses:
+        '200':
+          description: City updated successfully
+        '400':
+          description: Invalid city ID
+    delete:
+      summary: Delete a city by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: City deleted successfully
+
+components:
+  schemas:
+    City:
+      type: object
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        stateProvince:
+          type: string
+        population:
+          type: integer
+        majorIndustries:
+          type: string
+        climateType:
+          type: string
+    CityUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        stateProvince:
+          type: string
+        population:
+          type: integer
+        majorIndustries:
+          type: string
+        climateType:
+          type: string
