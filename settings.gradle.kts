@@ -1,1 +1,1 @@
-rootProject.name = "todoexample"
+rootProject.name = "cityapi"

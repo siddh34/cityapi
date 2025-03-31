@@ -33,7 +33,7 @@ class CityService(private val connection: Connection) {
     """
     
 
-        private const val SELECT_CITY_BY_ID = "SELECT name, population FROM cities WHERE id = ?"
+        private const val SELECT_CITY_BY_ID = "SELECT name, country, state_province, population, major_industries, climate_type FROM cities WHERE id = ?"
         private const val INSERT_CITY = "INSERT INTO cities (name, country, state_province, population, major_industries, climate_type) VALUES (?, ?, ?, ?, ?, ?)"
         private const val UPDATE_CITY = "UPDATE cities SET name = ?, country = ?, state_province = ?, population = ?, major_industries = ?, climate_type = ? WHERE id = ?"
         private const val DELETE_CITY = "DELETE FROM cities WHERE id = ?"
@@ -90,22 +90,24 @@ class CityService(private val connection: Connection) {
 
     // Read a city
     suspend fun read(id: Int): City = withContext(Dispatchers.IO) {
-        val statement = connection.prepareStatement(SELECT_CITY_BY_ID)
-        statement.setInt(1, id)
-        val resultSet = statement.executeQuery()
-
-        if (resultSet.next()) {
-            val name = resultSet.getString("name")
-            val population = resultSet.getInt("population")
-            val country = resultSet.getString("country")
-            val stateProvince = resultSet.getString("state_province")
-            val majorIndustries = resultSet.getString("major_industries")
-            val climateType = resultSet.getString("climate_type")
-            return@withContext City(name, country, stateProvince, population, majorIndustries, climateType)
-        } else {
-            throw Exception("Record not found")
+        connection.prepareStatement(SELECT_CITY_BY_ID).use { statement ->
+            statement.setInt(1, id)
+            statement.executeQuery().use { resultSet ->
+                if (resultSet.next()) {
+                    val name = resultSet.getString("name")
+                    val population = resultSet.getInt("population")
+                    val country = resultSet.getString("country")
+                    val stateProvince = resultSet.getString("state_province")
+                    val majorIndustries = resultSet.getString("major_industries")
+                    val climateType = resultSet.getString("climate_type")
+                    return@withContext City(name, country, stateProvince, population, majorIndustries, climateType)
+                } else {
+                    throw Exception("Record not found")
+                }
+            }
         }
     }
+    
 
     // Update a city
     suspend fun update(id: Int, city: City) = withContext(Dispatchers.IO) {
@@ -144,7 +146,7 @@ class CityService(private val connection: Connection) {
             }
         }
         
-        statement.setInt(values.size + 1, id)
+        statement.setInt(values.size, id)
         statement.executeUpdate()
     }
     
